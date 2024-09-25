@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    networks:
+      - frontend
+      - backend
+
+  app1:
+    build:
+      context: ./app1
+    container_name: app1
+    volumes:
+      - ./app1/src:/var/www/html
+    networks:
+      - backend
+
+  app2:
+    build:
+      context: ./app2
+    container_name: app2
+    volumes:
+      - ./app2/src:/var/www/html
+    networks:
+      - backend
+
+  api:
+    build:
+      context: /home/admin1/Vagrant-and-Docker-Files/2PHPapps-NginxReverseProxy-Mysql-db-with-API/api
+    container_name: api
+    networks:
+      - backend
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+    volumes:
+      - ./db_data:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:
